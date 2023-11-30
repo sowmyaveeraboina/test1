@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="impFlow" doc:id="3a8d3518-e782-43d0-8c4c-635b863f1480" >
+		<http:request method="GET" doc:name="Request" doc:id="862537d7-5dd0-45b2-9178-6715d52a39d5" url="https://api.publicapis.org/entries" sendCorrelationId="ALWAYS" correlationId="#[uuid()]"/>
+		<logger level="INFO" doc:name="Logger" doc:id="390cb4be-9ba2-44f6-9572-9d11444cc226" message="#[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="3a1de107-a4f3-454f-8e93-787a31b841e6">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload.entries map {
+	APIName: $.API,
+	APIDesc: $.Description
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="f5ebbc9b-73cc-40e5-a218-f191cd030140" message='#["After": payload]'/>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="308d2f1e-17e7-4b46-99cc-6733f70d9490" type="HTTP:NOT_FOUND">
+				<set-variable value="#[error]" doc:name="Set Variable" doc:id="2bd63a9c-8cb2-43ab-ad85-5868a2d69b9c" variableName="errordetails"/>
+				<ee:transform doc:name="Transform Message" doc:id="8d0812ed-95ca-4a91-b115-2e0968ac5894" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errordesc": vars.errordetails.description,
+	"type": vars.errordetails.errorType,
+	"flow": "IMP FLOW"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>

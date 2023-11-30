@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<error-handler name="exceptionError_Handler" doc:id="15cac821-e25d-4a83-af6c-b9f6156b9cff" >
+		<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="7a1187d9-5c47-43a7-9362-3a649c6224f7" type="HTTP:NOT_FOUND" >
+			<set-variable value="#[error]" doc:name="Set Variable" doc:id="def50166-3a9e-4431-93de-8b6c6747a986" variableName="errordetails" />
+			<ee:transform doc:name="Transform Message" doc:id="fb11adb7-b68b-406a-9338-fec850ef8410" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errordesc": vars.errordetails.description,
+	"type": vars.errordetails.errorType,
+	"flow": "IMP FLOW"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-continue>
+		<on-error-propagate enableNotifications="true" logException="true" doc:name="On Error Propagate" doc:id="bc238156-5b15-4efc-aaf5-39bbe58bb8f6" type="HTTP:NOT_FOUND">
+			<set-variable value="#[error]" doc:name="Set Variable" doc:id="85ef2339-c87e-4336-b84e-a8549f15ad27" variableName="errordetails" />
+			<ee:transform doc:name="Transform Message" doc:id="0c054348-6025-4f2c-b51c-2e9b70a3cabe" >
+				<ee:message >
+					<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"errordesc": vars.errordetails.description,
+	"type": vars.errordetails.errorType,
+	"flow": "IMP FLOW"
+}]]></ee:set-payload>
+				</ee:message>
+			</ee:transform>
+		</on-error-propagate>
+	</error-handler>
+</mule>
