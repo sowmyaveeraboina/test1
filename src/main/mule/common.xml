@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:secure-properties="http://www.mulesoft.org/schema/mule/secure-properties"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/secure-properties http://www.mulesoft.org/schema/mule/secure-properties/current/mule-secure-properties.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+	<configuration doc:name="Configuration" doc:id="534903e9-fa10-4646-bfe8-707106645823" defaultErrorHandler-ref="exceptionError_Handler" />
+	<configuration-properties doc:name="Configuration properties" doc:id="9b9abd00-510d-4cd7-a6b4-e5a3420d6de7" file="${env}.properties" />
+	<global-property doc:name="Global Property" doc:id="f8004a1b-36f7-475a-a989-8fe4650149c6" name="env" value="dev" />
+	<global-property doc:name="Global Property" doc:id="deb8d987-7adc-4027-a43c-1f9828fa1325" name="secure.key" value="Flight@12345678#" />
+	<secure-properties:config name="Secure_Properties_Config" doc:name="Secure Properties Config" doc:id="d07a358a-7559-4896-b09d-c57f396837ef" file="${env}.properties" key="${secure.key}" />
+	<api-gateway:autodiscovery apiId="18313300" ignoreBasePath="true" doc:name="API Autodiscovery" doc:id="e6340b69-531f-4322-9300-5ca75e2d5681" flowRef="flightsapi-main" />
+</mule>
